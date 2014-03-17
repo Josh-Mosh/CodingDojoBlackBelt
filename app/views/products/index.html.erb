@@ -1,0 +1,43 @@
+
+<div class='header'>
+	<div class='col-md-4'>
+		<h1>All Products</h1>
+	</div>
+	<div class='col-md-4'>
+		<a href="/users/<%= session[:user_id] %>" class='btn btn-warning'>User Dashboard</a>
+	</div>
+	<div class='col-md-4 header_right'>
+		<h4>Logged in as: <%= @user.first_name + ' ' + @user.last_name %> </h4>
+		<%= simple_form_for @user, url: {action: 'destroy', controller: 'sessions'}, method: :delete do |f|%>
+			<%= f.button :submit, value: "Logout", class: "btn btn-sm btn-primary" %>
+		<% end %>
+	</div>
+</div>
+
+<div class='success'>
+	<p> <%= flash[:bought] %> </p>
+</div>
+
+<table>
+	<th>Product</th>
+	<th>Price</th>
+	<th>Seller</th>
+	<th>Date Posted</th>
+	<th>Action</th>
+	<% @products.each do |product| %>
+	<tr>
+		<td><%= product.name %></td>
+		<td><%= number_to_currency(product.price) %></td>
+		<td><%= User.find(product.user_id).first_name + ' ' + User.find(product.user_id).last_name %></td>
+		<td><%= product.created_at.to_time.strftime("%b %e, %Y") %></td>
+		<td>
+			<%= simple_form_for @purchase, url: {action: 'create', controller: 'purchases'} do |f| %>
+			<%= f.input :user_id, as: :hidden, input_html: {value: product.user_id} %>
+			<%= f.input :product_id, as: :hidden, input_html: {value: product.id} %>
+			<%= f.button :submit, value: "Buy", class: "btn btn-sm btn-success" %>
+			<% end %>
+		</td>
+	</tr>
+	<% end %>
+
+</table>

@@ -1,0 +1,21 @@
+
+<h1>Register</h1>
+
+<%= simple_form_for @user do |f|%>
+	<%= f.input :first_name, input_html: {class: 'form-control', placeholder: "First Name"}, autofocus: true %>
+	<%= f.input :last_name, input_html: {class: 'form-control', placeholder: "Last Name"} %>
+	<%= f.input :email, input_html: {class: 'form-control', placeholder: "Your Email"} %>
+	<%= f.input :password, input_html: {class: 'form-control', placeholder: "Your Password"} %>
+	<%= f.input :password_confirmation, input_html: {class: 'form-control', placeholder: "Confirm Password"} %>
+	<%= f.button :submit, class: 'btn btn-warning' %>
+<% end %>
+
+<div class='errors'>
+	<% if flash[:errors] %>
+		<% flash[:errors].each do |error| %>
+			<p> <%= error %> </p> 
+		<% end %>
+	<% end %>
+</div>
+
+<p>Already a user? <a href="/login" class='btn btn-link'>Login</a></p>

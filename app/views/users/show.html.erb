@@ -1,0 +1,97 @@
+<h1>User Dashboard</h1>
+
+<div class='errors'>
+	<% if flash[:errors] %>
+		<% flash[:errors].each do |error| %>
+			<p><%= error %></p>
+		<% end %>
+	<% end %>
+</div>
+
+<div class='create_product'>
+	<%= simple_form_for @product, url: {action: 'create', controller: 'products'} do |f|%>
+		<div class='form-group'>
+			<%= f.input :name, input_html: {class: 'form-control', placeholder: "Product Name"}, autofocus: true %>
+		</div>
+
+		<div class='form-group'>
+			<%= f.input :price, as: :float, input_html: {class: 'form-control', placeholder: "Price"} %>
+		</div>
+
+		<%= f.button :submit, value: "Sell", class: 'btn btn-warning' %>
+	<% end %>
+</div>
+
+<div class='selling'>
+	<h2>Current Selling</h2>
+	<table>
+		<th>Product</th>
+		<th>Amount</th>
+		<th>Date Posted</th>
+		<th>Action</th>
+		<% @selling_total = 0 %>
+		<% @products.each do |product| %>
+		<tr>
+			<td><%= product.name %></td>
+			<td><%= number_to_currency(product.price) %></td>
+			<% @selling_total += product.price %>
+			<td><%= product.created_at.to_time.strftime("%b %e, %Y") %></td>
+			<td>
+				<%= simple_form_for @product, url: {action: 'destroy', controller: 'products'}, method: :delete do |f|%>
+				<%= f.input :product_id, as: :hidden, input_html: {value: product.id} %>
+				<%= f.button :submit, value: "Delete", class: "btn btn-sm btn-danger" %>
+				<% end %>
+			</td>
+		</tr>
+		<% end %>
+	</table>
+	<h4>Selling Total: <%= number_to_currency(@selling_total) %> </h4>
+
+</div>
+
+<div class='sales'>
+	<h2>Completed Sales</h2>
+	<table>
+		<th>Product</th>
+		<th>Amount</th>
+		<th>Date Bought</th>
+		<th>Buyer</th>
+		<% @sale_total = 0 %>
+		<% @sales.each do |sale| %>
+		<tr>
+			<td> <%= Product.find(sale.product_id).name %></td>
+			<td> <%= number_to_currency(Product.find(sale.product_id).price) %></td>
+			<% @sale_total += Product.find(sale.product_id).price %>
+			<td> <%= sale.created_at.to_time.strftime("%b %e, %Y") %></td>
+			<td>
+				<%= User.find(sale.buyer_id).first_name + ' ' + User.find(sale.buyer_id).last_name %>
+			</td>
+		</tr>
+		<% end %>
+	</table>
+	<h4>Sale Total: <%= number_to_currency(@sale_total) %> </h4>
+</div>
+
+<div class='purchases'>
+	<h2>Purchases</h2>
+	<table>
+		<th>Product</th>
+		<th>Amount</th>
+		<th>Date Bought</th>
+		<th>Seller</th>
+		<% @purchase_total = 0 %>
+		<% @purchases.each do |purchase| %>
+		<tr>
+			<td> <%= Product.find(purchase.product_id).name %></td>
+			<td> <%= number_to_currency(Product.find(purchase.product_id).price) %></td>
+			<% @purchase_total += Product.find(purchase.product_id).price %>
+			<td> <%= purchase.created_at.to_time.strftime("%b %e, %Y") %></td>
+			<td> <%= User.find(Product.find(purchase.product_id).user_id).first_name + ' ' + User.find(Product.find(purchase.product_id).user_id).last_name %></td>
+		</tr>
+	<% end %>	
+	</table>
+
+	<h4>Purchase Total: <%= number_to_currency(@purchase_total) %> </h4>
+</div>
+
+<a href="/products" class='btn btn-link btn-lg'>Back </a>
